@@ -26,6 +26,8 @@ app.use(
   })
 );
 
+//@todo payload generator
+
 app.post("/proof", jsonParser, async (request: Request, response: Response) => {
   try {
     const walletInfo = request.body;
