@@ -10,6 +10,7 @@ import {
 } from "./ton-connect/TonProof.js";
 import bodyParser from "body-parser";
 import cors from "cors";
+import { Address } from "ton-core";
 
 dotenv.config();
 
@@ -37,7 +38,7 @@ app.post("/proof", jsonParser, async (request: Request, response: Response) => {
     if (!proof) {
       return response
         .status(HttpStatus.BAD_REQUEST)
-        .send({ ok: false, message: "Invalid request1" });
+        .send({ ok: false, message: "Invalid request" });
     }
 
     if (walletInfo.network === "-3" && !process.env.TESTNET_ALLOWED) {
@@ -69,7 +70,7 @@ app.post("/proof", jsonParser, async (request: Request, response: Response) => {
         .send({ ok: false, message: "Signature is not verified" });
     }
 
-    return response.send({ ok: true, message: "Ok!" });
+    return response.send({ ok: true, message: "Ok!", data: { address: Address.parse(walletInfo.address).toString() } });
   } catch (exception) {
     return response
       .status(HttpStatus.BAD_REQUEST)
