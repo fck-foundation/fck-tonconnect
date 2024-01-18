@@ -11,6 +11,7 @@ import {
 import bodyParser from "body-parser";
 import cors from "cors";
 import { Address } from "ton-core";
+import {TonClient, WalletContractV3R2, WalletContractV4} from "ton";
 
 dotenv.config();
 
@@ -47,6 +48,9 @@ app.post("/proof", jsonParser, async (request: Request, response: Response) => {
         .send({ ok: false, message: "Testnet is not allowed!" });
     }
 
+    const client = new TonClient({
+      endpoint: "http://ton.fck.foundation/jsonRPC"
+    })
     const { data } = await axios(
       `https://${
         walletInfo.network === "-3" ? "testnet." : ""
@@ -54,7 +58,9 @@ app.post("/proof", jsonParser, async (request: Request, response: Response) => {
         walletInfo.address
       )}`
     );
-    const pubkey = Buffer.from(data.publicKey, "hex");
+    const address = Address.parse(walletInfo.address);
+    const publicKeyResult = await client.runMethod(address, "get_public_key");
+    const pubkey = Buffer.from(publicKeyResult.stack.readBigNumber().toString(16), "hex");
 
     const parsedMessage = ConvertTonProofMessage(walletInfo, proof);
     const checkMessage = await CreateMessage(parsedMessage);
