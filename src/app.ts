@@ -17,7 +17,6 @@ dotenv.config();
 
 const port = process.env.PORT;
 const app = express();
-
 const jsonParser = bodyParser.json();
 
 app.use(cors());
@@ -51,13 +50,6 @@ app.post("/proof", jsonParser, async (request: Request, response: Response) => {
     const client = new TonClient({
       endpoint: "http://ton.fck.foundation/jsonRPC"
     })
-    const { data } = await axios(
-      `https://${
-        walletInfo.network === "-3" ? "testnet." : ""
-      }tonapi.io/v1/wallet/getWalletPublicKey?account=${encodeURI(
-        walletInfo.address
-      )}`
-    );
     const address = Address.parse(walletInfo.address);
     const publicKeyResult = await client.runMethod(address, "get_public_key");
     const pubkey = Buffer.from(publicKeyResult.stack.readBigNumber().toString(16), "hex");
