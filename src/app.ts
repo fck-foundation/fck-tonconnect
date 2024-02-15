@@ -70,6 +70,7 @@ app.post("/proof", jsonParser, async (request: Request, response: Response) => {
 
     return response.send({ ok: true, message: "Ok!", data: { address: Address.parse(walletInfo.address).toString() } });
   } catch (exception) {
+    console.error(exception);
     return response
       .status(HttpStatus.BAD_REQUEST)
       .send({ ok: false, message: JSON.stringify(exception) });
